@@ -18,7 +18,7 @@ def get_type(token, txt=True, typ=False):
         text = "переменная с русскими буквами. Можно использовать лишь буквы латинского алфавита!"
         type = 'ru'
     else:
-        text=token
+        text='\''+token+'\''
         type=''
     if txt and typ:
         return text, type

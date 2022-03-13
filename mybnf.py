@@ -24,7 +24,7 @@ def block_3(tokens, _curr):
         if (get_type(tokens[_curr-1], False, True) or tokens[_curr-1] in ')') and tokens[_curr-1]!=TOKEN_EQ:
             error(_curr-1, text="Нет знака между членами выражения!")
         if tokens[_curr]!=TOKEN_END:
-            if tokens[_curr-1] in '+-*/^=' and (tokens[_curr] in '=:' or tokens[_curr+1] in '=:' or tokens[_curr]==TOKEN_END):
+            if tokens[_curr-1] in '+-*/^=' and (tokens[_curr] in '=:' or tokens[_curr+1] in '=:'):
                 error(_curr-1, text="Строка не может оканчиваться на знак действия!")
         else:
             if tokens[_curr-1] in '+-*/^=':
@@ -52,13 +52,12 @@ def block_3(tokens, _curr):
         b3 = int(tokens[_curr])
         return _curr+1, b3
     else:
-        err_msg = "Ошибка."
-        if tokens[_curr] in ['-', '+', '/', '*', '^']:
-            err_msg += " Два знака действия подряд."
-        if tokens[_curr] == ')':
-            err_msg += "Не найдено открывающей скобки!"
+        if tokens[_curr] in '-+/*^' and tokens[_curr-1] in '-+/*^':
+            err_msg = " Два знака действия подряд."
+        elif tokens[_curr] == ')':
+            err_msg = "Не найдено открывающей скобки!"
         else:
-            err_msg += " После \'" + str(tokens[_curr-1]) + "\' не может идти \'" + tokens[_curr] + "\'. "
+            err_msg = " После \'" + str(tokens[_curr-1]) + "\' не может идти \'" + tokens[_curr] + "\'. "
         error(_curr, text=err_msg)
 
 def block_2(tokens, _curr):
@@ -140,7 +139,7 @@ def run():
                 _curr += 1
                 while tokens[_curr + 1] != TOKEN_EQ and tokens[_curr + 1] != ':' and tokens[_curr] != TOKEN_REAL and tokens[_curr] != TOKEN_INTEGER:
                     if not re.match(EX_VAR, tokens[_curr]):
-                        error(_curr, text="В Real не может быть " + get_type(tokens[_curr]) + ". Допустимы лишь переменные.")
+                        error(_curr, text="В Real не может быть \'" + get_type(tokens[_curr]) + "\'. Допустимы лишь переменные.")
                     else:
                         _curr += 1
             if tokens[_curr] == TOKEN_INTEGER:
@@ -166,17 +165,29 @@ def run():
             else:
                 error(_curr, text="Метка может быть только целочисленной.")
         
-        if get_type(tokens[_curr], False, True)=='var':
+        if get_type(tokens[_curr], False, True)=='var' and tokens[_curr]!=TOKEN_END:
             name = tokens[_curr]
             _curr+=1
             if tokens[_curr] == TOKEN_EQ:
                 _curr+=1
-                while tokens[_curr] != TOKEN_END and tokens[_curr + 1] != TOKEN_EQ and tokens[_curr + 1] != ':':
-                    _curr, rp = right_part(tokens, _curr)
-                    print(name, " = ", rp)
-                    variables[name] = rp
-                    if _curr == len(tokens)-1 and tokens[_curr] != TOKEN_END:
-                        error(_curr, text="Программа не может кончаться на " + tokens[_curr])
+                if tokens[_curr]!=TOKEN_END:
+                    if tokens[_curr+1] in '=:' or tokens[_curr]==TOKEN_END:
+                        error(_curr-1, text="Оператор не содержит правой части.")
+                    while tokens[_curr] != TOKEN_END and tokens[_curr + 1] != TOKEN_EQ and tokens[_curr + 1] != ':':
+                        _curr, rp = right_part(tokens, _curr)
+                        print(name, " = ", rp)
+                        variables[name] = rp
+                        if _curr == len(tokens)-1 and tokens[_curr] != TOKEN_END:
+                            error(_curr, text="Программа не может кончаться на " + tokens[_curr])
+                else:
+                    error(_curr-1, text="Оператор не содержит правой части.")
+            else:
+                error(_curr-1, text="Оператор должен состоять из переменной, знака \"=\" и правой части.")
+        elif tokens[_curr]==TOKEN_END:
+            if tokens[_curr-1] == TOKEN_COLON:
+                error(_curr-1, "Оператор должен содержать выражение после метки.")
+        else:
+            error(_curr, "Оператор должен начинаться с переменной и знака равенства. Вместо этого введено " +get_type(tokens[_curr]))
     if TOKEN_END in tokens and tokens[-1] != TOKEN_END:
         error(len(tokens)-1, text="После End может идти только конец файла.")
     res = ""
