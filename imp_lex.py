@@ -61,7 +61,7 @@ token_exprs = [
     (r'\=',                    TOKEN_EQ),
     (r':',                     TOKEN_COLON),
     (r';',                     TOKEN_COLON),
-    (r'[а-яА-ЯёЁ]*',            TOKEN_COLON),
+    (r'[а-яА-ЯёЁ]+',            TOKEN_COLON),
     (EX_INT,                   INT),
     (EX_VAR,                   ID),
     ]
