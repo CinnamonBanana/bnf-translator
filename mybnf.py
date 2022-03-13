@@ -24,7 +24,7 @@ def block_3(tokens, _curr):
         if (get_type(tokens[_curr-1], False, True) or tokens[_curr-1] in ')') and tokens[_curr-1]!=TOKEN_EQ:
             error(_curr-1, text="Нет знака между членами выражения!")
         if tokens[_curr]!=TOKEN_END:
-            if tokens[_curr-1] in '+-*/^=' and (tokens[_curr] in '=:' or tokens[_curr+1] in '=:' or tokens[_curr+1]==TOKEN_END):
+            if tokens[_curr-1] in '+-*/^=' and (tokens[_curr] in '=:' or tokens[_curr+1] in '=:' or tokens[_curr]==TOKEN_END):
                 error(_curr-1, text="Строка не может оканчиваться на знак действия!")
         else:
             if tokens[_curr-1] in '+-*/^=':
@@ -61,7 +61,6 @@ def block_3(tokens, _curr):
             err_msg += " После \'" + str(tokens[_curr-1]) + "\' не может идти \'" + tokens[_curr] + "\'. "
         error(_curr, text=err_msg)
 
-
 def block_2(tokens, _curr):
     _curr, b3 = block_3(tokens, _curr)
     b2 = b3
@@ -92,7 +91,6 @@ def block_1(tokens, _curr):
                 current_token = str(b2)
                 err_msg = "Ошибка. Деление на \'0\'"
                 error(_curr-1, text=err_msg)
-
 
 def right_part(tokens, _curr):
     is_minus = False

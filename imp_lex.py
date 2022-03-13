@@ -45,7 +45,8 @@ OPERATIONS = [
 token_exprs = [
     (r'[ \n\t]+',              None),
     (r'#[^\n]*',               None),
-    (r',',                     TOKEN_COMMA), 
+    (r'[.,]',                     TOKEN_COMMA), 
+    #(r'.',                     TOKEN_COMMA), 
     (r'\bBegin\b',                 TOKEN_BEGIN),
     (r'\bEnd\b',                   TOKEN_END),
     (r'\bReal\b',                  TOKEN_REAL),
@@ -59,7 +60,8 @@ token_exprs = [
     (r'\)',                    TOKEN_RPAREN),
     (r'\=',                    TOKEN_EQ),
     (r':',                     TOKEN_COLON),
-    (r'[а-яА-ЯёЁ]',            TOKEN_COLON),
+    (r';',                     TOKEN_COLON),
+    (r'[а-яА-ЯёЁ]*',            TOKEN_COLON),
     (EX_INT,                   INT),
     (EX_VAR,                   ID),
     ]
